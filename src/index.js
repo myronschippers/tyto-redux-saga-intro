@@ -9,6 +9,10 @@ import { takeEvery, put } from 'redux-saga/effects';
 import logger from 'redux-logger';
 import axios from 'axios';
 
+//
+// REDUCERS
+// ---------
+
 const firstReducer = (state = 0, action) => {
     if (action.type === 'BUTTON_ONE') {
         console.log('firstReducer state', state);
@@ -27,14 +31,18 @@ const secondReducer = (state = 100, action) => {
     return state;
 };
 
+// TODO: create a CLEAR
 const elementListReducer = (state = [], action) => {
     switch (action.type) {
         case 'SET_ELEMENTS':
-            return action.payload;
         default:
             return state;
     }
 };    
+
+//
+// SAGAS
+// ---------
 
 // this is the saga that will watch for actions
 function* watcherSaga() {
@@ -62,7 +70,9 @@ function* getElementsSaga() {
 
 function* postElementSaga(action) {
     try {
+        // sending item to server for saving
         yield axios.post('/api/element', action.payload);
+        // updating the redux store state after post finishes
         yield put({ type: 'GET_ELEMENTS' });
     } catch(err) {
         console.error('Something went wrong with POST: ', err);
