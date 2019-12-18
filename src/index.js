@@ -5,7 +5,9 @@ import registerServiceWorker from './registerServiceWorker';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
+import { takeEvery, put } from 'redux-saga/effects';
 import logger from 'redux-logger';
+import axios from 'axios';
 
 const firstReducer = (state = 0, action) => {
     if (action.type === 'BUTTON_ONE') {
@@ -36,7 +38,35 @@ const elementListReducer = (state = [], action) => {
 
 // this is the saga that will watch for actions
 function* watcherSaga() {
+    console.log('In Watcher Saga');
+    yield takeEvery('GET_ELEMENTS', getElementsSaga);
+    yield takeEvery('POST_ELEMENT', postElementSaga);
+}
 
+function* getElementsSaga() {
+    console.log('Yay a generator saga function.... Happy Day?');
+    try {
+        const response = yield axios({
+            method: 'GET',
+            url: '/api/element'
+        });
+        // const response = yield axios.get('/api/element');
+        yield put({
+            type: 'SET_ELEMENTS',
+            payload: response.data
+        });
+    } catch(err) {
+        console.log('error fetching elements: ', err);
+    }
+}
+
+function* postElementSaga(action) {
+    try {
+        yield axios.post('/api/element', action.payload);
+        yield put({ type: 'GET_ELEMENTS' });
+    } catch(err) {
+        console.error('Something went wrong with POST: ', err);
+    }
 }
 
 
