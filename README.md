@@ -1,4 +1,5 @@
-# redux-saga-starter
+# Redux Saga Intro
+
 `npm install`
 
 This is the starting repo to accompany 06-03b_redux-saga-intro.md
